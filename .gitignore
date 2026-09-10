@@ -1,0 +1,27 @@
+.DS_Store
+.env
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+build/
+dist/
+
+# Coverage and test artifacts
+.coverage
+coverage.xml
+htmlcov/
+
+# Local model and application data
+.cache/
+data/raw/
+data/processed/
+models/
+
