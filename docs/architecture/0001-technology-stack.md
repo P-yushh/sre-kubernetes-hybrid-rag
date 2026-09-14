@@ -15,7 +15,8 @@ model services and expose retrieval quality, latency, token usage, and cost.
 - Express the retrieval and generation workflow as explicit LangGraph nodes.
 - Parse Markdown documents through a Docling adapter with source-specific normalization.
 - Generate dense embeddings with `BAAI/bge-large-en-v1.5` through Sentence Transformers and
-  PyTorch MPS on the development Mac.
+  PyTorch MPS on the development Mac. Pin the model/tokenizer revision so upstream changes cannot
+  silently alter chunk boundaries or evaluation IDs.
 - Combine Rank-BM25 sparse results and Qdrant dense results with a tested Python RRF
   implementation; later compare it with Qdrant-native RRF.
 - Implement a shared reranker protocol with `cross-encoder/ms-marco-MiniLM-L6-v2` and
