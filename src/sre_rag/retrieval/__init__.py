@@ -11,19 +11,31 @@ from sre_rag.retrieval.fusion import (
     RRFConfig,
 )
 from sre_rag.retrieval.qdrant import QdrantVectorStore
+from sre_rag.retrieval.reranking import (
+    BGE_RERANKER_MODEL,
+    MINILM_RERANKER_MODEL,
+    CrossEncoderConfig,
+    CrossEncoderReranker,
+    Reranker,
+)
 from sre_rag.retrieval.vector_store import VectorHit, VectorStore
 
 __all__ = [
     "BGEConfig",
     "BGEEmbedder",
+    "BGE_RERANKER_MODEL",
     "BM25Config",
     "BM25Retriever",
+    "CrossEncoderConfig",
+    "CrossEncoderReranker",
     "DenseRetriever",
     "Embedder",
+    "MINILM_RERANKER_MODEL",
     "QdrantVectorStore",
     "RRFConfig",
     "RankFusion",
     "Rankings",
+    "Reranker",
     "ReciprocalRankFusion",
     "Retriever",
     "SRETokenizer",
