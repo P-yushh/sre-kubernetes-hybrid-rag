@@ -8,6 +8,12 @@ from sre_rag.domain.answers import (
     RefusalResponse,
 )
 from sre_rag.domain.documents import Chunk, Corpus, SourceDocument, SourceProvenance
+from sre_rag.domain.generation import (
+    GeneratedAnswerDraft,
+    GenerationProvider,
+    GenerationResult,
+    GenerationUsage,
+)
 from sre_rag.domain.retrieval import (
     RetrievalCandidate,
     RetrievalMethod,
@@ -20,6 +26,10 @@ __all__ = [
     "Citation",
     "Corpus",
     "GroundedAnswer",
+    "GeneratedAnswerDraft",
+    "GenerationProvider",
+    "GenerationResult",
+    "GenerationUsage",
     "QueryResponse",
     "RefusalCode",
     "RefusalResponse",
