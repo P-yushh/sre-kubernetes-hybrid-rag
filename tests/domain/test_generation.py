@@ -7,7 +7,11 @@ from sre_rag.domain.generation import GeneratedAnswerDraft, GenerationUsage
 
 
 def test_generation_draft_preserves_answer_and_citations() -> None:
-    draft = GeneratedAnswerDraft(answer="Use the referenced setting [2].", citation_numbers=(2,))
+    draft = GeneratedAnswerDraft(
+        answerable=True,
+        answer="Use the referenced setting [2].",
+        citation_numbers=(2,),
+    )
 
     assert draft.citation_numbers == (2,)
 
@@ -15,7 +19,16 @@ def test_generation_draft_preserves_answer_and_citations() -> None:
 @pytest.mark.parametrize("citations", [(), (0,), (1, 1)])
 def test_generation_draft_rejects_invalid_citations(citations: tuple[int, ...]) -> None:
     with pytest.raises(ValidationError):
-        GeneratedAnswerDraft(answer="answer", citation_numbers=citations)
+        GeneratedAnswerDraft(answerable=True, answer="answer", citation_numbers=citations)
+
+
+def test_unanswerable_draft_cannot_claim_citations() -> None:
+    with pytest.raises(ValidationError, match="cannot cite"):
+        GeneratedAnswerDraft(
+            answerable=False,
+            answer="The supplied context is insufficient.",
+            citation_numbers=(1,),
+        )
 
 
 def test_generation_usage_rejects_negative_tokens() -> None:

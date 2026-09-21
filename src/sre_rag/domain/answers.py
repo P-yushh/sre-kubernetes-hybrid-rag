@@ -36,10 +36,6 @@ class GroundedAnswer(DomainModel):
         if len(citation_numbers) != len(set(citation_numbers)):
             raise ValueError("citation numbers must be unique")
 
-        expected_numbers = list(range(1, len(citation_numbers) + 1))
-        if sorted(citation_numbers) != expected_numbers:
-            raise ValueError("citation numbers must be contiguous and start at 1")
-
         inline_numbers = {int(number) for number in _CITATION_PATTERN.findall(self.answer)}
         if inline_numbers != set(citation_numbers):
             raise ValueError("inline citation markers must match citation records")

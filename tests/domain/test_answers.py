@@ -39,11 +39,7 @@ def test_grounded_answer_maps_inline_markers_to_citations() -> None:
     [
         ("There is no inline marker.", (make_citation(),), "markers must match"),
         ("Only the first source is used [1].", (make_citation(), make_citation()), "unique"),
-        (
-            "Citation numbering skips an entry [1] [3].",
-            (make_citation(1), make_citation(3)),
-            "contiguous",
-        ),
+        ("Citation record does not match marker [2].", (make_citation(1),), "markers must match"),
     ],
 )
 def test_grounded_answer_rejects_invalid_citation_mappings(
@@ -51,6 +47,15 @@ def test_grounded_answer_rejects_invalid_citation_mappings(
 ) -> None:
     with pytest.raises(ValidationError, match=message):
         GroundedAnswer(answer=answer, citations=citations)
+
+
+def test_grounded_answer_allows_citing_only_the_second_context() -> None:
+    response = GroundedAnswer(
+        answer="The second context contains the relevant evidence [2].",
+        citations=(make_citation(2),),
+    )
+
+    assert response.citations[0].number == 2
 
 
 def test_query_response_is_a_discriminated_union() -> None:

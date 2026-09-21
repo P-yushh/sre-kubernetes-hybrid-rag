@@ -47,7 +47,8 @@ def _response(**overrides: Any) -> SimpleNamespace:
         "model": "gpt-5.6-luna",
         "status": "completed",
         "output_text": (
-            '{"answer":"The pod exceeded its memory limit [1].","citation_numbers":[1]}'
+            '{"answerable":true,"answer":"The pod exceeded its memory limit [1].",'
+            '"citation_numbers":[1]}'
         ),
         "usage": SimpleNamespace(input_tokens=40, output_tokens=12),
     }

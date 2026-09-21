@@ -2,7 +2,7 @@
 
 from enum import StrEnum
 
-from pydantic import Field, field_validator
+from pydantic import Field, model_validator
 
 from sre_rag.domain.base import DomainModel, NonEmptyText
 
@@ -17,17 +17,21 @@ class GenerationProvider(StrEnum):
 class GeneratedAnswerDraft(DomainModel):
     """Structured model output awaiting independent citation validation."""
 
+    answerable: bool
     answer: NonEmptyText
-    citation_numbers: tuple[int, ...] = Field(min_length=1)
+    citation_numbers: tuple[int, ...] = ()
 
-    @field_validator("citation_numbers")
-    @classmethod
-    def citations_must_be_positive_and_unique(cls, value: tuple[int, ...]) -> tuple[int, ...]:
-        if any(number <= 0 for number in value):
+    @model_validator(mode="after")
+    def citations_must_match_answerability(self) -> "GeneratedAnswerDraft":
+        if any(number <= 0 for number in self.citation_numbers):
             raise ValueError("draft citation numbers must be positive")
-        if len(value) != len(set(value)):
+        if len(self.citation_numbers) != len(set(self.citation_numbers)):
             raise ValueError("draft citation numbers must be unique")
-        return value
+        if self.answerable and not self.citation_numbers:
+            raise ValueError("answerable drafts must cite at least one context")
+        if not self.answerable and self.citation_numbers:
+            raise ValueError("unanswerable drafts cannot cite contexts")
+        return self
 
 
 class GenerationUsage(DomainModel):

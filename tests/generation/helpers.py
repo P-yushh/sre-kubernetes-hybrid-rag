@@ -33,6 +33,7 @@ def make_generation_result(
 ) -> GenerationResult:
     return GenerationResult(
         draft=GeneratedAnswerDraft(
+            answerable=True,
             answer="The container exceeded its memory limit [1].",
             citation_numbers=(1,),
         ),

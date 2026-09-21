@@ -51,7 +51,7 @@ def _request() -> GenerationRequest:
 def _payload() -> dict[str, object]:
     return {
         "model": "qwen3:8b",
-        "response": '{"answer":"Use maxSurge [1].","citation_numbers":[1]}',
+        "response": '{"answerable":true,"answer":"Use maxSurge [1].","citation_numbers":[1]}',
         "done": True,
         "prompt_eval_count": 30,
         "eval_count": 9,
@@ -95,7 +95,10 @@ def test_ollama_transport_failure_is_translated_for_fallback() -> None:
         {"done": True},
         {"response": "not-json", "done": True},
         {"response": '{"answer":"missing citations"}', "done": True},
-        {"response": '{"answer":"answer [1]","citation_numbers":[1]}', "done": False},
+        {
+            "response": '{"answerable":true,"answer":"answer [1]","citation_numbers":[1]}',
+            "done": False,
+        },
     ],
 )
 def test_ollama_rejects_invalid_responses(payload: object) -> None:
