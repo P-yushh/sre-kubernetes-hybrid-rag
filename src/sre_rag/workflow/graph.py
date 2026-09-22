@@ -38,6 +38,7 @@ class RAGOutput(TypedDict):
     """Public result emitted by the compiled workflow."""
 
     result: GuardedAnswerResult
+    reranked_candidates: tuple[RetrievalCandidate, ...]
 
 
 class RAGState(RAGInput, total=False):
@@ -72,6 +73,14 @@ class WorkflowConfig:
             raise ValueError(f"workflow limits must be positive: {names}")
 
 
+@dataclass(frozen=True, slots=True)
+class RAGExecution:
+    """Guarded response plus the exact evidence retained for evaluation."""
+
+    result: GuardedAnswerResult
+    contexts: tuple[RetrievalCandidate, ...]
+
+
 class RAGWorkflow:
     """Small application facade over a compiled deterministic state graph."""
 
@@ -99,6 +108,11 @@ class RAGWorkflow:
     def invoke(self, query: RetrievalQuery) -> GuardedAnswerResult:
         """Run one query through the complete graph and return its guarded result."""
 
+        return self.invoke_with_evidence(query).result
+
+    def invoke_with_evidence(self, query: RetrievalQuery) -> RAGExecution:
+        """Run one query and retain the final evidence for offline evaluation."""
+
         query_id = str(query.query_id)
         with self._telemetry.observe(
             stage=PipelineStage.WORKFLOW,
@@ -107,9 +121,10 @@ class RAGWorkflow:
         ) as observation:
             output = self._graph.invoke({"query": query})
             result = cast(GuardedAnswerResult, output["result"])
+            contexts = cast(tuple[RetrievalCandidate, ...], output["reranked_candidates"])
             observation.update(output=_result_summary(result))
         self._telemetry.record_result(result)
-        return result
+        return RAGExecution(result=result, contexts=contexts)
 
 
 def build_rag_graph(

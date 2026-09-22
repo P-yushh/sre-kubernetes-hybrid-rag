@@ -1,0 +1,67 @@
+name: RAG quality gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner_factory:
+        description: Zero-argument EvaluationRunner factory in module:function form
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      runner_factory:
+        description: Zero-argument EvaluationRunner factory in module:function form
+        required: true
+        type: string
+    secrets:
+      OPENAI_API_KEY:
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rag-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    name: Golden-set thresholds
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SRE_RAG_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SRE_RAG_EVALUATION_RUNNER_FACTORY: ${{ inputs.runner_factory }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: "0.12.17"
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Install locked dependencies
+        run: uv sync --frozen --all-groups
+
+      - name: Require the reviewed benchmark
+        run: test -s data/golden_dataset.json
+
+      - name: Enforce retrieval and faithfulness thresholds
+        run: >-
+          uv run sre-rag-quality-gate
+          --dataset data/golden_dataset.json
+          --report artifacts/evaluation-report.json
+
+      - name: Upload per-sample evaluation evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rag-evaluation-report-${{ github.run_id }}
+          path: artifacts/evaluation-report.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     openai_api_key: SecretStr | None = None
     openai_generation_model: str = "gpt-5.6-luna"
+    openai_evaluation_model: str = "gpt-5.6-terra"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen3:8b"
     generation_max_output_tokens: int = Field(default=800, gt=0)

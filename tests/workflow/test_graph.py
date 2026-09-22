@@ -177,6 +177,19 @@ def test_workflow_limits_are_forwarded_to_every_ranking_stage() -> None:
     assert reranker.limits == [2]
 
 
+def test_workflow_exposes_exact_reranked_evidence_for_evaluation() -> None:
+    sparse = RecordingRetriever((_candidate("sparse", RetrievalMethod.BM25, 1),))
+    dense = RecordingRetriever((_candidate("dense", RetrievalMethod.DENSE, 1),))
+    workflow, _, _ = _workflow(sparse, dense, config=WorkflowConfig(reranker_limit=1))
+
+    execution = workflow.invoke_with_evidence(RetrievalQuery(text="question"))
+
+    assert isinstance(execution.result.response, GroundedAnswer)
+    assert len(execution.contexts) == 1
+    assert execution.result.response.citations[0].chunk_id == execution.contexts[0].chunk.chunk_id
+    assert execution.contexts[0].stages[-1].method is RetrievalMethod.RERANKER
+
+
 def test_workflow_emits_safe_stage_metadata_and_generation_usage() -> None:
     sparse = RecordingRetriever((_candidate("sparse", RetrievalMethod.BM25, 1),))
     dense = RecordingRetriever((_candidate("dense", RetrievalMethod.DENSE, 1),))

@@ -18,10 +18,10 @@ dist/
 .coverage
 coverage.xml
 htmlcov/
+artifacts/
 
 # Local model and application data
 .cache/
 data/raw/
 data/processed/
 models/
-

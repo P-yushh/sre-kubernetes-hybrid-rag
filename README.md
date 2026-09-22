@@ -36,9 +36,15 @@ uv run mypy
 uv run pytest --cov=sre_rag --cov-report=term-missing
 ```
 
+GitHub Actions runs the same deterministic checks for pull requests. The separate live RAG gate is
+activated only when a reviewed golden dataset, runtime factory, and protected evaluation secret are
+configured; see [`docs/evaluation.md`](docs/evaluation.md).
+
 Never commit `.env`, API keys, model caches, downloaded corpora, or generated vector data.
 
 ## Architecture
 
 The accepted technology choices and their rationale are recorded in
 [`docs/architecture/0001-technology-stack.md`](docs/architecture/0001-technology-stack.md).
+The golden-set schema, retrieval metrics, and faithfulness thresholds are documented in
+[`docs/evaluation.md`](docs/evaluation.md).
