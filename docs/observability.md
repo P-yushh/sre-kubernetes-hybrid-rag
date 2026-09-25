@@ -38,3 +38,7 @@ histogram_quantile(
 
 Prometheus scrapes the service at `/metrics`. Query IDs are deliberately excluded from metric
 labels because one label value per request would create unbounded time-series cardinality.
+
+The local Compose stack provisions Prometheus and a read-only Grafana operations dashboard for
+these metrics. Startup instructions and service URLs are in
+[`local-development.md`](local-development.md).

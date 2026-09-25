@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     environment: Environment = "development"
     log_level: str = "INFO"
+    api_base_url: str = "http://localhost:8000"
+    qdrant_url: str = "http://localhost:6333"
+    qdrant_collection_name: str = Field(default="sre_kubernetes_chunks", min_length=1)
     openai_api_key: SecretStr | None = None
     openai_generation_model: str = "gpt-5.6-luna"
     openai_evaluation_model: str = "gpt-5.6-terra"

@@ -30,6 +30,9 @@ dependencies = [
 sre-rag-quality-gate = "sre_rag.evaluation.cli:main"
 
 [dependency-groups]
+dashboard = [
+  "streamlit>=1.64,<2.0",
+]
 dev = [
   "mypy>=1.15,<2.0",
   "pre-commit>=4.2,<5.0",
@@ -68,5 +71,5 @@ files = ["src", "tests"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["ragas.*"]
+module = ["ragas.*", "streamlit.*"]
 ignore_missing_imports = true

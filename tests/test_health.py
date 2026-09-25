@@ -35,3 +35,4 @@ async def test_openapi_schema_exposes_health_endpoint() -> None:
 
     assert response.status_code == 200
     assert "/healthz" in response.json()["paths"]
+    assert "/v1/query" in response.json()["paths"]

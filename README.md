@@ -15,17 +15,36 @@ interfaces so they can be tested independently.
 - macOS or Linux
 - Python 3.11
 - [`uv`](https://docs.astral.sh/uv/)
+- Docker Desktop for Qdrant and local monitoring
 
 ## Local setup
 
 ```bash
 cp .env.example .env
 uv sync --dev
-uv run uvicorn sre_rag.main:app --reload
+uv run uvicorn sre_rag.main:app --reload --host 0.0.0.0
 ```
 
 Open `http://127.0.0.1:8000/healthz` for the health response or
 `http://127.0.0.1:8000/docs` for the generated API documentation.
+
+Qdrant, Prometheus, and Grafana run as ARM64-aware supporting containers while the API and PyTorch
+models remain native for Apple MPS acceleration. See
+[`docs/local-development.md`](docs/local-development.md) for startup commands, service URLs,
+persistent storage behavior, and the provisioned operations dashboard.
+
+## Product dashboard
+
+The optional Streamlit interface displays grounded answers, citations, guardrail refusals, retrieval
+scores, latency, provider, and token usage without coupling UI reruns to model execution:
+
+```bash
+uv sync --all-groups
+uv run --group dashboard streamlit run src/sre_rag/dashboard/app.py
+```
+
+See [`docs/dashboard.md`](docs/dashboard.md) for the API boundary, local URL, and runtime-readiness
+behavior. Streamlit provides query-level product inspection; Grafana remains the operations dashboard.
 
 ## Quality checks
 
@@ -48,3 +67,4 @@ The accepted technology choices and their rationale are recorded in
 [`docs/architecture/0001-technology-stack.md`](docs/architecture/0001-technology-stack.md).
 The golden-set schema, retrieval metrics, and faithfulness thresholds are documented in
 [`docs/evaluation.md`](docs/evaluation.md).
+The metrics and tracing model is documented in [`docs/observability.md`](docs/observability.md).
