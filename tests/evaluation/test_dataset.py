@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from sre_rag.evaluation.dataset import load_golden_dataset
+from sre_rag.evaluation.dataset import load_golden_dataset, validate_context_ids
 
 
 def test_loader_reads_valid_versioned_dataset(tmp_path: Path) -> None:
@@ -39,3 +39,29 @@ def test_loader_rejects_empty_placeholder_dataset(tmp_path: Path) -> None:
 
     with pytest.raises(ValidationError):
         load_golden_dataset(path)
+
+
+def test_context_validation_rejects_stale_chunk_references(tmp_path: Path) -> None:
+    path = tmp_path / "golden_dataset.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "samples": [
+                    {
+                        "sample_id": "oom",
+                        "question": "Why OOMKilled?",
+                        "expected_answer": "The memory limit was exceeded.",
+                        "ground_truth_context": ["missing-chunk"],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    dataset = load_golden_dataset(path)
+
+    with pytest.raises(ValueError, match="missing-chunk"):
+        validate_context_ids(dataset, {"different-chunk"})
+
+    validate_context_ids(dataset, {"missing-chunk"})

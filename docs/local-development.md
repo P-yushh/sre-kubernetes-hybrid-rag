@@ -42,14 +42,16 @@ Run the API natively in a second terminal. Binding to all host interfaces allows
 container to reach the `/metrics` endpoint through `host.docker.internal`.
 
 ```bash
-PYTORCH_ENABLE_MPS_FALLBACK=1 uv run uvicorn sre_rag.main:app \
-  --reload --host 0.0.0.0 --port 8000
+uv run sre-rag-index
+PYTORCH_ENABLE_MPS_FALLBACK=1 uv run uvicorn sre_rag.main:create_runtime_app \
+  --factory --host 0.0.0.0 --port 8000
 ```
 
 | Component | Local URL |
 | --- | --- |
 | API documentation | <http://127.0.0.1:8000/docs> |
 | API health | <http://127.0.0.1:8000/healthz> |
+| API readiness | <http://127.0.0.1:8000/readyz> |
 | API metrics | <http://127.0.0.1:8000/metrics> |
 | Streamlit product dashboard | <http://127.0.0.1:8501> |
 | Qdrant dashboard | <http://127.0.0.1:6333/dashboard> |

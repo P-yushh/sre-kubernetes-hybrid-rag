@@ -27,11 +27,14 @@ concurrency:
 jobs:
   evaluate:
     name: Golden-set thresholds
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    runs-on: [self-hosted, macOS, ARM64, sre-rag]
+    environment: rag-quality
+    timeout-minutes: 90
     env:
       SRE_RAG_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       SRE_RAG_EVALUATION_RUNNER_FACTORY: ${{ inputs.runner_factory }}
+      SRE_RAG_LANGFUSE_ENABLED: "false"
+      PYTORCH_ENABLE_MPS_FALLBACK: "1"
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,6 +53,15 @@ jobs:
 
       - name: Require the reviewed benchmark
         run: test -s data/golden_dataset.json
+
+      - name: Start dense retrieval service
+        run: docker compose up -d qdrant
+
+      - name: Build the pinned hybrid index
+        run: uv run sre-rag-index
+
+      - name: Validate benchmark references
+        run: uv run sre-rag-benchmark-verify --dataset data/golden_dataset.json
 
       - name: Enforce retrieval and faithfulness thresholds
         run: >-

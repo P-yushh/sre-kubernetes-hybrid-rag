@@ -1,6 +1,7 @@
 """Application configuration loaded from environment variables."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr
@@ -26,9 +27,14 @@ class Settings(BaseSettings):
     api_base_url: str = "http://localhost:8000"
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection_name: str = Field(default="sre_kubernetes_chunks", min_length=1)
+    index_chunks_path: Path = Path("data/processed/chunks.jsonl")
+    index_metadata_path: Path = Path("data/processed/index-manifest.json")
+    model_device: Literal["auto", "mps", "cpu"] = "auto"
+    langfuse_enabled: bool = True
     openai_api_key: SecretStr | None = None
     openai_generation_model: str = "gpt-5.6-luna"
     openai_evaluation_model: str = "gpt-5.6-terra"
+    openai_reasoning_effort: Literal["none", "low", "medium", "high", "xhigh", "max"] = "none"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen3:8b"
     generation_max_output_tokens: int = Field(default=800, gt=0)

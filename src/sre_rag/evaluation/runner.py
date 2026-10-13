@@ -98,9 +98,15 @@ def _retrieval_scores(
     retrieved_ids: Sequence[str],
     reference_ids: Sequence[str],
 ) -> EvaluationScores:
-    overlap = len(set(retrieved_ids) & set(reference_ids))
-    precision = overlap / len(retrieved_ids) if retrieved_ids else 0.0
-    recall = overlap / len(reference_ids)
+    references = set(reference_ids)
+    relevant_seen = 0
+    precision_sum = 0.0
+    for rank, chunk_id in enumerate(retrieved_ids, start=1):
+        if chunk_id in references:
+            relevant_seen += 1
+            precision_sum += relevant_seen / rank
+    precision = precision_sum / relevant_seen if relevant_seen else 0.0
+    recall = relevant_seen / len(reference_ids)
     return EvaluationScores(
         context_precision=precision,
         context_recall=recall,

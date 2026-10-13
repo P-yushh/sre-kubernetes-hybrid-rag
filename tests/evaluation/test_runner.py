@@ -76,13 +76,13 @@ def test_runner_combines_id_metrics_with_ragas_faithfulness() -> None:
     runner = EvaluationRunner(
         workflow,
         faithfulness,
-        EvaluationThresholds(context_precision=0.5),
+        EvaluationThresholds(),
     )
 
     report = runner.run(_dataset())
 
     assert report.passed
-    assert report.aggregate.context_precision == 0.5
+    assert report.aggregate.context_precision == 1.0
     assert report.aggregate.context_recall == 1.0
     assert report.aggregate.faithfulness == 0.9
     assert report.answer_rate == 1.0
@@ -92,6 +92,22 @@ def test_runner_combines_id_metrics_with_ragas_faithfulness() -> None:
         "Memory limit evidence.",
         "Probe evidence.",
     )
+
+
+def test_context_precision_penalizes_late_relevant_evidence() -> None:
+    contexts = (
+        make_reranked_candidate("irrelevant", "Probe evidence.", 1),
+        make_reranked_candidate("relevant", "Memory limit evidence.", 2),
+    )
+
+    report = EvaluationRunner(
+        FakeWorkflow(_answer_execution(contexts), []),
+        FakeFaithfulness(1.0),
+        EvaluationThresholds(context_precision=0.5),
+    ).run(_dataset())
+
+    assert report.aggregate.context_precision == 0.5
+    assert report.aggregate.context_recall == 1.0
 
 
 def test_refusal_scores_zero_faithfulness_and_fails_gate() -> None:

@@ -27,6 +27,9 @@ dependencies = [
 ]
 
 [project.scripts]
+sre-rag-corpus-verify = "sre_rag.corpora.cli:main"
+sre-rag-index = "sre_rag.indexing.cli:main"
+sre-rag-benchmark-verify = "sre_rag.evaluation.benchmark_cli:main"
 sre-rag-quality-gate = "sre_rag.evaluation.cli:main"
 
 [dependency-groups]

@@ -22,10 +22,13 @@ interfaces so they can be tested independently.
 ```bash
 cp .env.example .env
 uv sync --dev
-uv run uvicorn sre_rag.main:app --reload --host 0.0.0.0
+docker compose up -d qdrant
+uv run sre-rag-index
+PYTORCH_ENABLE_MPS_FALLBACK=1 uv run uvicorn sre_rag.main:create_runtime_app \
+  --factory --host 0.0.0.0 --port 8000
 ```
 
-Open `http://127.0.0.1:8000/healthz` for the health response or
+Open `http://127.0.0.1:8000/readyz` for runtime readiness or
 `http://127.0.0.1:8000/docs` for the generated API documentation.
 
 Qdrant, Prometheus, and Grafana run as ARM64-aware supporting containers while the API and PyTorch
@@ -59,7 +62,29 @@ GitHub Actions runs the same deterministic checks for pull requests. The separat
 activated only when a reviewed golden dataset, runtime factory, and protected evaluation secret are
 configured; see [`docs/evaluation.md`](docs/evaluation.md).
 
+A source-grounded 30-case benchmark candidate is included for human review. It is deliberately not
+promoted to the release filename, so the live gate cannot imply approval that has not happened.
+
 Never commit `.env`, API keys, model caches, downloaded corpora, or generated vector data.
+
+## Knowledge corpora
+
+The Kubernetes and postmortem corpora remain remotely hosted and are pinned by full commit SHA in
+[`corpora/manifest.yaml`](corpora/manifest.yaml). The verifier securely materializes only the selected
+Markdown into temporary storage, validates its file count and content checksum, and deletes it when
+finished:
+
+```bash
+uv run sre-rag-corpus-verify
+```
+
+See [`docs/corpus-management.md`](docs/corpus-management.md) for source attribution, licenses,
+security limits, and the controlled source-update procedure.
+
+The index command streams each verified corpus through ingestion, writes dense vectors to a
+manifest-versioned Qdrant collection, then atomically publishes the checksummed sparse chunk
+artifact. See [`docs/indexing-and-runtime.md`](docs/indexing-and-runtime.md) for the rebuild and
+startup contracts.
 
 ## Architecture
 

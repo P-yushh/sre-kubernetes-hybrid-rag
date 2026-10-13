@@ -72,6 +72,16 @@ class OllamaGenerationBackend:
     def with_httpx(cls, config: OllamaConfig | None = None) -> "OllamaGenerationBackend":
         return cls(cast(_HttpClient, httpx.Client()), config)
 
+    @classmethod
+    def from_httpx_client(
+        cls,
+        client: httpx.Client,
+        config: OllamaConfig | None = None,
+    ) -> "OllamaGenerationBackend":
+        """Use a caller-owned client so the application can close it at shutdown."""
+
+        return cls(cast(_HttpClient, client), config)
+
     def generate(self, request: GenerationRequest) -> GenerationResult:
         try:
             response = self._client.post(

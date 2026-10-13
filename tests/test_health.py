@@ -35,4 +35,24 @@ async def test_openapi_schema_exposes_health_endpoint() -> None:
 
     assert response.status_code == 200
     assert "/healthz" in response.json()["paths"]
+    assert "/readyz" in response.json()["paths"]
     assert "/v1/query" in response.json()["paths"]
+
+
+@pytest.mark.anyio
+async def test_readiness_requires_a_loaded_workflow() -> None:
+    unavailable = ASGITransport(app=create_app(Settings(environment="test")))
+    async with AsyncClient(transport=unavailable, base_url="http://test") as client:
+        response = await client.get("/readyz")
+
+    assert response.status_code == 503
+    assert response.json() == {"status": "unavailable", "reason": "workflow_not_loaded"}
+
+    ready = ASGITransport(
+        app=create_app(Settings(environment="test"), query_workflow=object())  # type: ignore[arg-type]
+    )
+    async with AsyncClient(transport=ready, base_url="http://test") as client:
+        response = await client.get("/readyz")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ready"}

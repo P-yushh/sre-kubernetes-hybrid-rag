@@ -1,7 +1,7 @@
 """OpenAI Responses API adapter for structured grounded generation."""
 
 from dataclasses import dataclass
-from typing import Protocol, cast
+from typing import Literal, Protocol, cast
 
 from openai import OpenAI, OpenAIError
 
@@ -35,6 +35,7 @@ class OpenAIConfig:
     timeout_seconds: float = 30.0
     max_retries: int = 2
     temperature: float = 0.0
+    reasoning_effort: Literal["none", "low", "medium", "high", "xhigh", "max"] = "none"
 
     def __post_init__(self) -> None:
         if not self.model.strip():
@@ -81,15 +82,15 @@ class OpenAIGenerationBackend:
 
     def generate(self, request: GenerationRequest) -> GenerationResult:
         try:
-            response = self._client.responses.create(
-                model=self._config.model,
-                instructions=request.instructions,
-                input=request.prompt,
-                max_output_tokens=request.max_output_tokens,
-                metadata={"query_id": request.query_id},
-                store=False,
-                temperature=self._config.temperature,
-                text={
+            payload: dict[str, object] = {
+                "model": self._config.model,
+                "instructions": request.instructions,
+                "input": request.prompt,
+                "max_output_tokens": request.max_output_tokens,
+                "metadata": {"query_id": request.query_id},
+                "store": False,
+                "reasoning": {"effort": self._config.reasoning_effort},
+                "text": {
                     "format": {
                         "type": "json_schema",
                         "name": "grounded_answer_draft",
@@ -97,7 +98,10 @@ class OpenAIGenerationBackend:
                         "strict": True,
                     }
                 },
-            )
+            }
+            if self._config.reasoning_effort == "none":
+                payload["temperature"] = self._config.temperature
+            response = self._client.responses.create(**payload)
         except self._provider_errors as error:
             raise ProviderUnavailableError("OpenAI generation request failed") from error
 

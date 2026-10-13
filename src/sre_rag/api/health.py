@@ -2,7 +2,8 @@
 
 from typing import Literal
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from sre_rag.config import Settings
@@ -30,3 +31,15 @@ async def health(request: Request) -> HealthResponse:
         version=settings.app_version,
         environment=settings.environment,
     )
+
+
+@router.get("/readyz", response_model=None)
+async def readiness(request: Request) -> dict[str, str] | JSONResponse:
+    """Report whether the immutable index and query workflow were loaded."""
+
+    if request.app.state.query_workflow is None:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unavailable", "reason": "workflow_not_loaded"},
+        )
+    return {"status": "ready"}

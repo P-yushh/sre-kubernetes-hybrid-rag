@@ -1,0 +1,32 @@
+schema_version: 1
+sources:
+  - name: kubernetes-docs
+    corpus: kubernetes
+    repository: kubernetes/website
+    revision: 1e1be1df9361f0c7e7fd8d3e76e8e0519638f964
+    archive_url: https://api.github.com/repos/kubernetes/website/tarball/1e1be1df9361f0c7e7fd8d3e76e8e0519638f964
+    content_sha256: 5cf9edd9ca4cb8e1058eaf43d4022d9b9adc34723af0a6eb5db8e503d1c63f53
+    license: CC-BY-4.0
+    license_url: https://github.com/kubernetes/website/blob/1e1be1df9361f0c7e7fd8d3e76e8e0519638f964/LICENSE
+    attribution: Kubernetes documentation contributors
+    include_paths:
+      - content/en/docs/concepts
+      - content/en/docs/tasks
+    expected_markdown_files: 407
+    max_archive_bytes: 209715200
+    max_extracted_bytes: 33554432
+
+  - name: postmortems-app
+    corpus: post_mortems
+    repository: icco/postmortems
+    revision: 65d17a2185105b50ea63cad992513c995b50f813
+    archive_url: https://api.github.com/repos/icco/postmortems/tarball/65d17a2185105b50ea63cad992513c995b50f813
+    content_sha256: 313b6708a428154240f368c9fa29d2df1c2234f9d628a790913e9bb1238b1c3e
+    license: GPL-3.0
+    license_url: https://github.com/icco/postmortems/blob/65d17a2185105b50ea63cad992513c995b50f813/LICENSE
+    attribution: postmortems.app contributors
+    include_paths:
+      - data
+    expected_markdown_files: 242
+    max_archive_bytes: 33554432
+    max_extracted_bytes: 8388608

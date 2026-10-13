@@ -34,6 +34,29 @@ def test_reindexing_same_chunk_is_idempotent() -> None:
     assert _point_id(chunk.chunk_id) == _point_id(chunk.chunk_id)
 
 
+def test_runtime_validation_requires_exact_existing_index() -> None:
+    client = QdrantClient(":memory:")
+    store = QdrantVectorStore(client, collection_name="chunks")
+
+    try:
+        store.validate_collection(3, expected_points=1)
+    except RuntimeError as error:
+        assert "does not exist" in str(error)
+    else:
+        raise AssertionError("a missing runtime collection should be rejected")
+
+    store.ensure_collection(3)
+    store.upsert((make_chunk(),), ((1.0, 0.0, 0.0),))
+    store.validate_collection(3, expected_points=1)
+
+    try:
+        store.validate_collection(3, expected_points=2)
+    except RuntimeError as error:
+        assert "point count" in str(error)
+    else:
+        raise AssertionError("an incomplete runtime collection should be rejected")
+
+
 def test_existing_collection_schema_is_validated() -> None:
     client = QdrantClient(":memory:")
     client.create_collection(

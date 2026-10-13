@@ -54,6 +54,26 @@ class QdrantVectorStore:
                 )
         self._vector_size = vector_size
 
+    def validate_collection(self, vector_size: int, *, expected_points: int) -> None:
+        """Require an already-built collection with the exact expected shape and size."""
+
+        if vector_size <= 0 or expected_points <= 0:
+            raise ValueError("vector size and expected point count must be positive")
+        if not self._client.collection_exists(self._collection_name):
+            raise RuntimeError(f"Qdrant collection {self._collection_name!r} does not exist")
+        collection = self._client.get_collection(self._collection_name)
+        vectors = collection.config.params.vectors
+        if not isinstance(vectors, models.VectorParams):
+            raise ValueError("Qdrant collection must use one unnamed dense vector")
+        if vectors.size != vector_size or vectors.distance != models.Distance.COSINE:
+            raise ValueError("Qdrant collection vector configuration does not match the embedder")
+        if collection.points_count != expected_points:
+            raise RuntimeError(
+                "Qdrant point count does not match the immutable index artifact: "
+                f"expected {expected_points}, received {collection.points_count}"
+            )
+        self._vector_size = vector_size
+
     def upsert(self, chunks: Sequence[Chunk], vectors: Sequence[Vector]) -> None:
         """Idempotently upload vectors using stable UUIDs derived from chunk IDs."""
 

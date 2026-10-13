@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "samples": [
+    {
+      "sample_id": "oomkilled-memory-limit",
+      "question": "What does OOMKilled indicate for a restarted Kubernetes container?",
+      "expected_answer": "OOMKilled indicates that the container tried to use more memory than its configured limit; investigate a memory leak or adjust the memory request and limit if the behavior is expected.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/configuration/manage-resources-containers.md#requests-and-limits--troubleshooting--my-container-is-terminated@43"]
+    },
+    {
+      "sample_id": "crashloopbackoff-restart-delay",
+      "question": "Why does Kubernetes delay repeated container restarts during CrashLoopBackOff?",
+      "expected_answer": "Kubernetes applies exponential backoff to repeated failed starts so a faulty container does not overwhelm the system with continuous restart attempts.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/pods/pod-lifecycle.md#pod-lifetime--how-pods-handle-problems-with-containers-container-restarts@16"]
+    },
+    {
+      "sample_id": "deployment-rolling-update-controls",
+      "question": "Which Deployment fields control how quickly a RollingUpdate replaces Pods?",
+      "expected_answer": "The maxUnavailable and maxSurge fields control how old ReplicaSets scale down and new ReplicaSets scale up during a rolling update.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/controllers/deployment.md#use-case--writing-a-deployment-spec--strategy--rolling-update-deployment@44"]
+    },
+    {
+      "sample_id": "imagepullpolicy-defaults",
+      "question": "How is imagePullPolicy defaulted for an image digest, the latest tag, and a non-latest tag?",
+      "expected_answer": "A digest defaults to IfNotPresent, latest or no tag defaults to Always, and a non-latest tag defaults to IfNotPresent. The value is set when the object is created.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/containers/images.md#image-names--updating-images--image-pull-policy--default-image-pull-policy-imagepullpolicy-defaulting@8"]
+    },
+    {
+      "sample_id": "startup-probe-behavior",
+      "question": "What happens to liveness and readiness probes while a startup probe has not succeeded?",
+      "expected_answer": "Kubernetes does not execute liveness or readiness probes until the startup probe succeeds. If the startup probe fails, the kubelet kills the container and applies its restart policy.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/pods/probes.md#types-of-probe-types-of-probe--startup-probe-startup-probe@2"]
+    },
+    {
+      "sample_id": "liveness-probe-purpose",
+      "question": "When should a liveness probe restart an unhealthy container?",
+      "expected_answer": "Use a liveness probe when the container should be killed and restarted after probe failure, with restartPolicy Always or OnFailure; a higher failureThreshold can let readiness fail first.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/pods/probes.md#types-of-probe-types-of-probe--when-to-use-each-probe-when-to-use-each-probe--when-should-you-use-a-liveness-probe-when-should-you-use-a-liveness-probe@6"]
+    },
+    {
+      "sample_id": "endpointslice-conditions",
+      "question": "Which endpoint conditions are stored by the EndpointSlice API?",
+      "expected_answer": "EndpointSlice stores the serving, terminating, and ready conditions.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/services-networking/endpoint-slices.md#endpointslice-api-endpointslice-resource--address-types--conditions@2"]
+    },
+    {
+      "sample_id": "networkpolicy-provider-support",
+      "question": "Why might creating a NetworkPolicy have no effect in a cluster?",
+      "expected_answer": "A NetworkPolicy has no effect unless the cluster's selected networking solution implements NetworkPolicy support.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/services-networking/network-policies.md#prerequisites--the-networkpolicy-resource-networkpolicy-resource@4"]
+    },
+    {
+      "sample_id": "hpa-downscale-window",
+      "question": "How can an HPA set a one-minute downscale stabilization window?",
+      "expected_answer": "Set behavior.scaleDown.stabilizationWindowSeconds to 60.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md#how-does-a-horizontalpodautoscaler-work--configurable-scaling-behavior--example-change-downscale-stabilization-window@29"]
+    },
+    {
+      "sample_id": "static-pod-secret-restriction",
+      "question": "Can a static Pod consume ConfigMaps or Secrets?",
+      "expected_answer": "No. Kubernetes does not allow ConfigMaps or Secrets to be used with static Pods.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/configuration/secret.md#uses-for-secrets--working-with-secrets--using-secrets-with-static-pods-restriction-static-pod@34"]
+    },
+    {
+      "sample_id": "init-container-name-uniqueness",
+      "question": "What naming constraint applies to app and init containers in the same Pod?",
+      "expected_answer": "Every app and init container name in a Pod must be unique; sharing a name causes a validation error.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/workloads/pods/init-containers.md#understanding-init-containers--detailed-behavior@14"]
+    },
+    {
+      "sample_id": "leader-lock-release",
+      "question": "What does ControllerManagerReleaseLeaderElectionLockOnExit improve?",
+      "expected_answer": "It makes kube-controller-manager release its leader-election lock on exit instead of waiting for the TTL, allowing a new leader to be elected faster.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/architecture/leases.md#node-heartbeats-node-heart-beats--leader-election--kube-controller-manager-lock-release-on-exit@3"]
+    },
+    {
+      "sample_id": "node-allocatable-enforcement",
+      "question": "How does kubelet enforce Node Allocatable when enforceNodeAllocatable includes pods?",
+      "expected_answer": "The kubelet evicts Pods when aggregate Pod usage exceeds Allocatable; kube-reserved and system-reserved can also be selected for enforcement.",
+      "ground_truth_context": ["kubernetes:content/en/docs/tasks/administer-cluster/reserve-compute-resources.md#node-allocatable--enabling-qos-and-pod-level-cgroups--enforcing-node-allocatable@11"]
+    },
+    {
+      "sample_id": "topology-spread-node-filtering",
+      "question": "How do nodeSelector and nodeAffinity affect topology-spread skew calculations?",
+      "expected_answer": "The scheduler excludes nodes that do not match the incoming Pod's nodeSelector or nodeAffinity from skew calculations.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/scheduling-eviction/topology-spread-constraints.md#motivation--topology-spread-constraint-examples--example-conflicting-topology-spread-constraints-example-conflicting-topologyspreadconstraints--interaction-with-node-affinity-and-node-selectors@22"]
+    },
+    {
+      "sample_id": "coredns-configmap",
+      "question": "How is the default CoreDNS behavior customized in Kubernetes?",
+      "expected_answer": "Modify the CoreDNS ConfigMap to change its default behavior.",
+      "ground_truth_context": ["kubernetes:content/en/docs/tasks/administer-cluster/dns-custom-nameservers.md#introduction--coredns--coredns-configmap-options@7"]
+    },
+    {
+      "sample_id": "pod-security-restricted-fields",
+      "question": "Which PodSecurityPolicy fields are needed to support the Restricted Pod Security profile?",
+      "expected_answer": "The Restricted profile relies on requiredDropCapabilities to drop ALL, runAsUser for RunAsNonRoot, and allowPrivilegeEscalation set false; SELinux-related policy can also be required.",
+      "ground_truth_context": ["kubernetes:content/en/docs/tasks/configure-pod-container/migrate-from-psp.md#overall-approach--2-simplify-amp-standardize-podsecuritypolicies-simplify-psps--2-b-eliminate-options-not-covered-by-the-pod-security-standards-eliminate-non-standard-options@9"]
+    },
+    {
+      "sample_id": "pvc-access-modes",
+      "question": "How does a PersistentVolumeClaim request a storage access mode?",
+      "expected_answer": "A PersistentVolumeClaim uses the same access-mode conventions as volumes when requesting storage.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/storage/persistent-volumes.md#introduction--persistentvolumeclaims--access-modes@46"]
+    },
+    {
+      "sample_id": "ceph-rbd-storageclass-deprecation",
+      "question": "What should replace the deprecated in-tree Ceph RBD StorageClass provisioner?",
+      "expected_answer": "Use the CephFS RBD CSI driver instead of the deprecated internal Ceph RBD provisioner.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/storage/storage-classes.md#storageclass-objects--parameters--ceph-rbd-deprecated-ceph-rbd@19"]
+    },
+    {
+      "sample_id": "serviceaccount-external-token",
+      "question": "How can an external application obtain a short-lived ServiceAccount token?",
+      "expected_answer": "Use the TokenRequest API to obtain a short-lived ServiceAccount token for the external application.",
+      "ground_truth_context": ["kubernetes:content/en/docs/concepts/security/service-accounts.md#what-are-service-accounts-what-are-service-accounts--how-to-use-service-accounts-how-to-use--assign-a-serviceaccount-to-a-pod-assign-to-pod--node-audience-restriction-for-service-account-tokens-node-audience-restriction@14"]
+    },
+    {
+      "sample_id": "pdb-apply-command",
+      "question": "Which kubectl command creates or updates a PodDisruptionBudget from mypdb.yaml?",
+      "expected_answer": "Run kubectl apply -f mypdb.yaml.",
+      "ground_truth_context": ["kubernetes:content/en/docs/tasks/run-application/configure-pdb.md#protecting-an-application-with-a-poddisruptionbudget--create-the-pdb-object@9"]
+    },
+    {
+      "sample_id": "pagerduty-dns-change",
+      "question": "What caused PagerDuty's container cluster DNS incident on December 15, 2021?",
+      "expected_answer": "A defective DNS configuration change reached production without being detected in testing and made every service in the orchestration cluster unable to resolve DNS.",
+      "ground_truth_context": ["post_mortems:data/23713fc8-675d-4de9-9127-7950f10c6131.md#root@0"]
+    },
+    {
+      "sample_id": "firefox-addon-certificate",
+      "question": "Why did most Firefox add-ons stop working in May 2019?",
+      "expected_answer": "The certificate used to sign add-ons expired, so Firefox could no longer validate their authenticity; the responsible team had misunderstood certificate-expiration behavior and QA did not test it.",
+      "ground_truth_context": ["post_mortems:data/5b73c1c1-8ec4-4901-91f3-0d993f582dd4.md#root@0"]
+    },
+    {
+      "sample_id": "crates-download-url-deploy",
+      "question": "What broke crates.io downloads on July 20, 2023?",
+      "expected_answer": "A deployment introduced a bug in download URL generation, breaking all crate downloads for about thirteen minutes and causing roughly 3.7 million failed requests including retries.",
+      "ground_truth_context": ["post_mortems:data/04f5afd8-09fc-4314-9c60-7f942faca125.md#root@0"]
+    },
+    {
+      "sample_id": "fastly-latent-bug-trigger",
+      "question": "What triggered Fastly's global outage on June 8, 2021?",
+      "expected_answer": "A valid customer configuration activated an undiscovered software bug introduced in a May deployment, causing 85 percent of Fastly's network to return errors.",
+      "ground_truth_context": ["post_mortems:data/20834b0c-3811-4447-bcfe-2e60eeeb6251.md#root@0"]
+    },
+    {
+      "sample_id": "basecamp-integer-exhaustion",
+      "question": "Why did Basecamp 3 enter read-only mode in November 2018?",
+      "expected_answer": "An events-table ID reached the 4-byte integer limit. Restoring writes required widening the live primary's column to an 8-byte integer, which forced a multi-hour table rewrite.",
+      "ground_truth_context": ["post_mortems:data/2552ccf5-4e03-40b1-a1fa-354a34bfa5fe.md#root@0"]
+    },
+    {
+      "sample_id": "razorpay-rds-data-loss",
+      "question": "Which MySQL setting contributed to Razorpay losing committed data during an RDS failover?",
+      "expected_answer": "innodb_flush_log_at_trx_commit was set to 2 instead of 1, so transaction logs were not flushed on every commit and the promoted standby missed about five seconds of committed data.",
+      "ground_truth_context": ["post_mortems:data/0d5441d3-c69a-4a0a-ab5f-c5ef6e7cc774.md#root@0"]
+    },
+    {
+      "sample_id": "github-mlag-split-brain",
+      "question": "How did GitHub's 2012 aggregation-switch incident cascade into fileserver split brain?",
+      "expected_answer": "An MLAG peer performed a disruptive failover and froze the network. Fileserver heartbeat timeouts then triggered STONITH commands that could not all be delivered, leaving both nodes in some active-passive pairs believing they were active before both powered off.",
+      "ground_truth_context": ["post_mortems:data/0787bc22-cd28-42d0-a0b2-71610a38a78f.md#root@0"]
+    },
+    {
+      "sample_id": "skyliner-memory-leak",
+      "question": "What caused Skyliner to be unavailable twice?",
+      "expected_answer": "A memory leak in a third-party library caused both Skyliner outages.",
+      "ground_truth_context": ["post_mortems:data/49e932a9-67eb-443d-9c33-1c6fa32b0d14.md#root@0"]
+    },
+    {
+      "sample_id": "northeast-blackout-alarm-race",
+      "question": "Which software failure prevented FirstEnergy operators from seeing critical grid changes during the 2003 blackout?",
+      "expected_answer": "A race condition in the Unix-based XA/21 energy-management system stalled the control-room alarm system for over an hour.",
+      "ground_truth_context": ["post_mortems:data/3435a88e-1b33-447e-9b4e-fda0625db87f.md#root@0"]
+    },
+    {
+      "sample_id": "flowdock-sequence-corruption",
+      "question": "How did Flowdock's database restart lead to cross-organization user exposure?",
+      "expected_answer": "The restart silently reset the user-ID sequence table to an old value, so the application reassigned existing IDs to users in other organizations; cached leaked IDs prolonged the issue after restoration.",
+      "ground_truth_context": ["post_mortems:data/118fcca7-cf5d-4b6d-924a-3cb6cf976f18.md#root@0"]
+    }
+  ]
+}

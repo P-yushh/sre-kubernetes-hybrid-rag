@@ -28,8 +28,8 @@ docker compose up -d
 Start the FastAPI process:
 
 ```bash
-PYTORCH_ENABLE_MPS_FALLBACK=1 uv run uvicorn sre_rag.main:app \
-  --reload --host 0.0.0.0 --port 8000
+PYTORCH_ENABLE_MPS_FALLBACK=1 uv run uvicorn sre_rag.main:create_runtime_app \
+  --factory --host 0.0.0.0 --port 8000
 ```
 
 For live queries, deployment composition must inject a real `RAGWorkflow` as described under
@@ -44,11 +44,9 @@ from the dashboard sidebar or with `SRE_RAG_API_BASE_URL`.
 
 ## Runtime readiness
 
-The module-level FastAPI application intentionally starts without constructing heavyweight models or
-silently indexing an unpinned corpus. Its health and metrics endpoints remain available, while
-`POST /v1/query` returns `503 WORKFLOW_UNAVAILABLE` until deployment composition injects a configured
-`RAGWorkflow` into `create_app(query_workflow=...)`. This fail-closed behavior avoids displaying
-fabricated demo answers and makes missing indexing/runtime setup explicit.
+The production factory loads the already-built, verified index during application lifespan. It never
+indexes an unpinned corpus at startup. `/readyz` returns success only after the workflow is loaded;
+startup fails closed if sparse and dense index state disagree.
 
 The public query response includes only citation-validated answers or deterministic refusals, final
 reranked evidence, aggregate latency, and safe model usage. Raw prompts, unvalidated model drafts,

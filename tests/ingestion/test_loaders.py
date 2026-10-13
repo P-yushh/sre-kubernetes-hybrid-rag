@@ -65,6 +65,16 @@ def test_loader_accepts_a_filtered_reference_file(tmp_path: Path) -> None:
     assert "--enable-admission-plugins" in documents[0].content
 
 
+def test_loader_skips_documents_without_normalized_content(tmp_path: Path) -> None:
+    source = tmp_path / "metadata-only.md"
+    source.write_text("---\ntitle: Redirect placeholder\n---\n", encoding="utf-8")
+    loader = MarkdownCorpusLoader(MarkdownNormalizer(PassThroughConverter()))
+
+    documents = loader.load(make_config(tmp_path, "metadata-only.md"))
+
+    assert documents == ()
+
+
 def test_loader_rejects_paths_outside_root(tmp_path: Path) -> None:
     corpus_root = tmp_path / "corpus"
     corpus_root.mkdir()

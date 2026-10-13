@@ -71,6 +71,8 @@ class MarkdownCorpusLoader:
             relative_path = PurePosixPath(path.relative_to(root).as_posix())
             raw_content = path.read_text(encoding="utf-8")
             normalized = self._normalizer.normalize(raw_content, name=path.name)
+            if not normalized.content.strip():
+                continue
             source_url = self._source_url(config.repository, config.revision, relative_path)
             provenance = SourceProvenance(
                 corpus=config.corpus,

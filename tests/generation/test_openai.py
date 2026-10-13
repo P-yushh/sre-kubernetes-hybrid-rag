@@ -68,6 +68,7 @@ def test_openai_backend_uses_responses_api_and_parses_usage() -> None:
     call = client.responses.calls[0]
     assert call["store"] is False
     assert call["temperature"] == 0.0
+    assert call["reasoning"] == {"effort": "none"}
     assert call["max_output_tokens"] == 500
     assert call["metadata"] == {"query_id": "query-1"}
     assert call["text"] == {
@@ -135,3 +136,15 @@ def test_openai_configuration_and_key_are_validated() -> None:
         OpenAIConfig(temperature=2.1)
     with pytest.raises(ValueError, match="API key"):
         OpenAIGenerationBackend.from_api_key(" ")
+
+
+def test_reasoning_requests_omit_incompatible_temperature() -> None:
+    client = FakeOpenAIClient(_response())
+
+    OpenAIGenerationBackend(
+        client,
+        OpenAIConfig(reasoning_effort="low"),
+    ).generate(_request())
+
+    assert client.responses.calls[0]["reasoning"] == {"effort": "low"}
+    assert "temperature" not in client.responses.calls[0]
