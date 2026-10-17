@@ -1,0 +1,35 @@
+# Sand and teal, shared by Streamlit's native light and dark theme choices.
+[theme]
+base = "light"
+
+[theme.light]
+primaryColor = "#126f68"
+backgroundColor = "#f3eee4"
+secondaryBackgroundColor = "#fffcf6"
+textColor = "#2c3531"
+linkColor = "#126f68"
+codeTextColor = "#2c3531"
+codeBackgroundColor = "#f5f0e5"
+borderColor = "#ded7c8"
+dataframeBorderColor = "#ded7c8"
+dataframeHeaderBackgroundColor = "#e3eee5"
+
+[theme.light.sidebar]
+backgroundColor = "#fffcf6"
+secondaryBackgroundColor = "#f3eee4"
+
+[theme.dark]
+primaryColor = "#82cbbd"
+backgroundColor = "#201f1b"
+secondaryBackgroundColor = "#2a2924"
+textColor = "#efe9dc"
+linkColor = "#82cbbd"
+codeTextColor = "#efe9dc"
+codeBackgroundColor = "#24231e"
+borderColor = "#46453b"
+dataframeBorderColor = "#46453b"
+dataframeHeaderBackgroundColor = "#2b423b"
+
+[theme.dark.sidebar]
+backgroundColor = "#2a2924"
+secondaryBackgroundColor = "#24231e"

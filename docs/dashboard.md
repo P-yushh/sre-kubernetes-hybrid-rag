@@ -42,6 +42,18 @@ uv run --group dashboard streamlit run src/sre_rag/dashboard/app.py
 Open <http://127.0.0.1:8501>. The API address defaults to `http://localhost:8000` and can be changed
 from the dashboard sidebar or with `SRE_RAG_API_BASE_URL`.
 
+## Appearance
+
+The dashboard uses the sand-and-teal palette configured in `.streamlit/config.toml`:
+warm sand backgrounds, cream secondary surfaces, teal controls and links, and charcoal text.
+The dark variant uses warm charcoal surfaces, pale sand text, and lighter teal accents.
+Both variants also style code blocks, retrieval tables, and the sidebar through Streamlit's
+native theme settings.
+
+Start Streamlit from the repository root so it loads the project configuration. Use the app's
+top-right menu, **Settings > Theme**, to switch between the configured light and dark themes.
+Restart Streamlit after adding or changing the configuration if the appearance has not updated.
+
 ## Runtime readiness
 
 The production factory loads the already-built, verified index during application lifespan. It never
